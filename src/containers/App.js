@@ -1,10 +1,12 @@
 import React, { Component }from 'react';
+import Particles from 'react-tsparticles';
 import Navigation from '../components/Navigation/Navigation';
 import Logo from '../components/Logo/Logo';
 import Rank from '../components/Rank/Rank';
 import ImageLinkForm from '../components/ImageLinkForm/ImageLinkForm';
 import FaceRecognition from '../components/FaceRecognition/FaceRecognition';
-import Particles from 'react-tsparticles';
+import SignIn from '../components/SignIn/SignIn';
+import Register from '../components/Register/Register';
 import './App.css';
 
 
@@ -56,7 +58,9 @@ class App extends Component{
     this.state = {
       input: '',
       imageUrl: '',
-      box: {}
+      box: {},
+      route: 'signin',
+      isSignedIn: false
     };
   };
 
@@ -71,6 +75,11 @@ class App extends Component{
       rightCol: width - (faceLocation.right_col * width),
       bottomRow: height - (faceLocation.bottom_row * height)
     }
+  };
+
+  onRouteChange = (route) => {
+    this.setState({ isSignedIn: (route === 'home' ? true : false)})
+    this.setState({ route: route })
   };
 
   displayFaceBox = (box) => {
@@ -122,14 +131,27 @@ class App extends Component{
   };
 
   render(){
+
+    const { route, box, imageUrl, isSignedIn } = this.state;
+
     return (
       <div className="App">
+        <Navigation 
+          onRouteChange={this.onRouteChange} 
+          isSignedIn={isSignedIn}
+        />
         <Particles options={tsParticlesOption}/>
-        <Navigation />
-        <Logo />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
-        <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+        { route === 'signin' ?
+          <SignIn onRouteChange={this.onRouteChange} />
+          : route === 'register' ?
+          <Register onRouteChange={this.onRouteChange} />
+          :<div>
+            <Logo />
+            <Rank />
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
+            <FaceRecognition box={box} imageUrl={imageUrl}/>
+          </div>
+        }
       </div>
     );
   }
