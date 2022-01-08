@@ -14,13 +14,13 @@ const tsParticlesOption = {
   fpsLimit: 140,
   particles: {
     color: {
-      value: "#ffffff",
+      value: '#ffffff',
     },
     links: {
       color: "#ffffff",
       distance: 150,
       enable: true,
-      opacity: 0.5,
+      opacity: 0.2,
       width: 1,
     },
     move: {
@@ -28,7 +28,7 @@ const tsParticlesOption = {
       enable: true,
       outMode: "bounce",
       random: false,
-      speed: 6,
+      speed: 2,
       straight: false,
     },
     number: {
@@ -39,7 +39,7 @@ const tsParticlesOption = {
       value: 150,
     },
     opacity: {
-      value: 0.5,
+      value: 0.2,
     },
     shape: {
       type: "circle",
@@ -60,7 +60,8 @@ class App extends Component{
       imageUrl: '',
       box: {},
       route: 'signin',
-      isSignedIn: false
+      isSignedIn: false,
+      user: {}
     };
   };
 
@@ -90,6 +91,16 @@ class App extends Component{
     this.setState({ input: event.target.value });
     console.log(this.state.input);
   };
+
+  loadUser = data => {
+    this.setState({ user: {
+      id: data.id, 
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }});
+  }
 
   onButtonClick = () => {
     // After the this function, the setState will take effects
@@ -144,7 +155,7 @@ class App extends Component{
         { route === 'signin' ?
           <SignIn onRouteChange={this.onRouteChange} />
           : route === 'register' ?
-          <Register onRouteChange={this.onRouteChange} />
+          <Register onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
           :<div>
             <Logo />
             <Rank />
