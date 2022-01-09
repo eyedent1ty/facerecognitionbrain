@@ -138,21 +138,29 @@ class App extends Component{
   
       fetch("https://api.clarifai.com/v2/models/f76196b43bbd45c99b4f3cd8e8b40a8a/versions/45fb9a671625463fa646c3523a3087d5/outputs", requestOptions)
         .then(response => response.text())
-        .then(result => this.displayFaceBox(this.calculateFaceLocation(JSON.parse(result, null, 2))))
+        .then(result => {
+          if(result){
+            fetch('http://localhost:3000/image', {
+              method: 'PUT',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({id: this.state.user.id})
+            })
+              .then(response => response.json())
+              .then(count => {
+                const { id, name, email, joined } = this.state.user;
+                this.setState({ user: {
+                  id,
+                  name,
+                  email,
+                  entries: count,
+                  joined
+                }})
+              })
+          }
+          this.displayFaceBox(this.calculateFaceLocation(JSON.parse(result, null, 2)))
+        })
         .catch(error => console.log('error', error));
-
-      fetch('http://localhost:3000/image', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: {
-          id: this.state.user.id
-        }
-      })
     }
-
-
   };
 
   render(){
