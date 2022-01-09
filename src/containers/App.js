@@ -89,16 +89,16 @@ class App extends Component{
 
   onInputChange = (event) => {
     this.setState({ input: event.target.value });
-    console.log(this.state.input);
   };
 
   loadUser = data => {
+    const { id, name, email, entries, joined } = data;
     this.setState({ user: {
-      id: data.id, 
-      name: data.name,
-      email: data.email,
-      entries: data.entries,
-      joined: data.joined
+      id,
+      name,
+      email,
+      entries,
+      joined
     }});
   }
 
@@ -110,40 +110,55 @@ class App extends Component{
     // https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
     // this will default to the latest version_id
 
-    const raw = JSON.stringify({
-      "user_app_id": {
-        "user_id": "v0dw3n646hy0",
-        "app_id": "fa7832ae6ff04de08201f737d7a546b4"
-      },
-      "inputs": [
-        {
-          "data": {
-            "image": {
-              "url": `${this.state.input}`
+    if(this.state.input !== '') {
+      const raw = JSON.stringify({
+        "user_app_id": {
+          "user_id": "v0dw3n646hy0",
+          "app_id": "fa7832ae6ff04de08201f737d7a546b4"
+        },
+        "inputs": [
+          {
+            "data": {
+              "image": {
+                "url": `${this.state.input}`
+              }
             }
           }
-        }
-      ]
-    });
-    
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Key e61ae0cf2fa446dfadd12f1899387553'
-      },
-      body: raw
-    };
+        ]
+      });
+      
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Key e61ae0cf2fa446dfadd12f1899387553'
+        },
+        body: raw
+      };
+  
+      fetch("https://api.clarifai.com/v2/models/f76196b43bbd45c99b4f3cd8e8b40a8a/versions/45fb9a671625463fa646c3523a3087d5/outputs", requestOptions)
+        .then(response => response.text())
+        .then(result => this.displayFaceBox(this.calculateFaceLocation(JSON.parse(result, null, 2))))
+        .catch(error => console.log('error', error));
 
-    fetch("https://api.clarifai.com/v2/models/f76196b43bbd45c99b4f3cd8e8b40a8a/versions/45fb9a671625463fa646c3523a3087d5/outputs", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(this.displayFaceBox(this.calculateFaceLocation(JSON.parse(result, null, 2)))))
-      .catch(error => console.log('error', error));
+      fetch('http://localhost:3000/image', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: {
+          id: this.state.user.id
+        }
+      })
+    }
+
+
   };
 
   render(){
 
     const { route, box, imageUrl, isSignedIn } = this.state;
+    const { name, entries } = this.state.user;
 
     return (
       <div className="App">
@@ -153,12 +168,12 @@ class App extends Component{
         />
         <Particles options={tsParticlesOption}/>
         { route === 'signin' ?
-          <SignIn onRouteChange={this.onRouteChange} />
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
           : route === 'register' ?
           <Register onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
           :<div>
             <Logo />
-            <Rank />
+            <Rank name={name} entries={entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
             <FaceRecognition box={box} imageUrl={imageUrl}/>
           </div>
