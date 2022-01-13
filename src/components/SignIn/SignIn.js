@@ -29,12 +29,13 @@ class SignIn extends React.Component{
         email: signInEmail,
         password: signUpPasswoIn
       })
-    }).then(res => res.json()).then(data => {
-      if(data.id !== undefined) {
-        this.props.loadUser(data);
-        this.props.onRouteChange('home');
-      }
-    })
+    }).then(res => res.json())
+      .then(data => {
+        if(data.id !== undefined) {
+          this.props.loadUser(data);
+          this.props.onRouteChange('home');
+        }
+      }).catch(err => console.log(err))
   }
 
   render() {

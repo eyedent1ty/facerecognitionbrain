@@ -51,18 +51,20 @@ const tsParticlesOption = {
   },
 };
 
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {}
+};
+
 class App extends Component{
 
   constructor(){
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {}
-    };
+    this.state = initialState;
   };
 
   calculateFaceLocation = (data) => {
@@ -79,7 +81,14 @@ class App extends Component{
   };
 
   onRouteChange = (route) => {
-    this.setState({ isSignedIn: (route === 'home' ? true : false)})
+    if(route === 'home') {
+      this.setState({ isSignedIn: true })
+    } else {
+      console.log(this.state)
+      console.log(initialState);
+      console.log(this.state === initialState);
+      this.setState(initialState)
+    }
     this.setState({ route: route })
   };
 
@@ -146,7 +155,8 @@ class App extends Component{
               body: JSON.stringify({id: this.state.user.id})
             })
               .then(response => response.json())
-              .then(count => this.setState(Object.assign(this.state.user, { entries: count })));
+              .then(count => this.setState(Object.assign(this.state.user, { entries: count })))
+              .catch(err => console.log(err))
           }
           this.displayFaceBox(this.calculateFaceLocation(JSON.parse(result, null, 2)))
         })

@@ -36,12 +36,15 @@ class Register extends React.Component {
         email: signUpEmail,
         password: signUpPassword
       })
-    }).then(res => res.json()).then(data => {
-      loadUser(data);
-      if(data.email != undefined){
-        onRouteChange('home');
-      }
-    });
+    })
+      .then(res => res.json())
+      .then(data => {
+        loadUser(data);
+        if(data.email != undefined){
+          onRouteChange('home');
+        }
+      })
+      .catch(err => console.log(err))
   }
 
   render() {
