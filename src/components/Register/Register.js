@@ -40,7 +40,7 @@ class Register extends React.Component {
       .then(res => res.json())
       .then(data => {
         loadUser(data);
-        if(data.email != undefined){
+        if(data.email !== undefined){
           onRouteChange('home');
         }
       })

@@ -51,6 +51,8 @@ const tsParticlesOption = {
   },
 };
 
+// setState() method from Component did not affect the other referenced object
+// So we can have initialState object like this to restart the state.
 const initialState = {
   input: '',
   imageUrl: '',
